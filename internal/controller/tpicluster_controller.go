@@ -19,12 +19,13 @@ package controller
 import (
 	"context"
 
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"sigs.k8s.io/cluster-api/util"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	logf "sigs.k8s.io/controller-runtime/pkg/log"
 
-	infrastructurev1alpha1 "github.com/cprivitere/cluster-api-provider-tpi/api/v1alpha1"
+	infrav1 "github.com/cprivitere/cluster-api-provider-tpi/api/v1alpha1"
 )
 
 // TPiClusterReconciler reconciles a TPiCluster object
@@ -48,9 +49,24 @@ type TPiClusterReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.20.4/pkg/reconcile
 func (r *TPiClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = logf.FromContext(ctx)
+	log := ctrl.LoggerFrom(ctx)
 
-	// TODO(user): your logic here
+	var tpiCluster infrav1.TPiCluster
+	if err := r.Get(ctx, req.NamespacedName, &tpiCluster); err != nil {
+		if apierrors.IsNotFound(err) {
+			return ctrl.Result{}, nil
+		}
+		return ctrl.Result{}, err
+	}
+
+	cluster, err := util.GetOwnerCluster(ctx, r.Client, tpiCluster.ObjectMeta)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	if cluster == nil {
+		log.Info("Waiting for Cluster Controller to set OwnerRef on DockerCluster")
+		return ctrl.Result{}, nil
+	}
 
 	return ctrl.Result{}, nil
 }
@@ -58,7 +74,7 @@ func (r *TPiClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 // SetupWithManager sets up the controller with the Manager.
 func (r *TPiClusterReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&infrastructurev1alpha1.TPiCluster{}).
+		For(&infrav1.TPiCluster{}).
 		Named("tpicluster").
 		Complete(r)
 }
