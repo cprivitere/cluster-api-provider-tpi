@@ -24,7 +24,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 
-	infrastructurev1alpha1 "github.com/cprivitere/cluster-api-provider-tpi/api/v1alpha1"
+	infrav1 "github.com/cprivitere/cluster-api-provider-tpi/api/v1alpha1"
 )
 
 // TPiMachineReconciler reconciles a TPiMachine object
@@ -58,7 +58,7 @@ func (r *TPiMachineReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 // SetupWithManager sets up the controller with the Manager.
 func (r *TPiMachineReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&infrastructurev1alpha1.TPiMachine{}).
+		For(&infrav1.TPiMachine{}).
 		Named("tpimachine").
 		Complete(r)
 }

@@ -27,7 +27,7 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	infrastructurev1alpha1 "github.com/cprivitere/cluster-api-provider-tpi/api/v1alpha1"
+	infrav1 "github.com/cprivitere/cluster-api-provider-tpi/api/v1alpha1"
 )
 
 var _ = Describe("TPiCluster Controller", func() {
@@ -40,13 +40,13 @@ var _ = Describe("TPiCluster Controller", func() {
 			Name:      resourceName,
 			Namespace: "default", // TODO(user):Modify as needed
 		}
-		tpicluster := &infrastructurev1alpha1.TPiCluster{}
+		tpicluster := &infrav1.TPiCluster{}
 
 		BeforeEach(func() {
 			By("creating the custom resource for the Kind TPiCluster")
 			err := k8sClient.Get(ctx, typeNamespacedName, tpicluster)
 			if err != nil && errors.IsNotFound(err) {
-				resource := &infrastructurev1alpha1.TPiCluster{
+				resource := &infrav1.TPiCluster{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      resourceName,
 						Namespace: "default",
@@ -59,7 +59,7 @@ var _ = Describe("TPiCluster Controller", func() {
 
 		AfterEach(func() {
 			// TODO(user): Cleanup logic after each test, like removing the resource instance.
-			resource := &infrastructurev1alpha1.TPiCluster{}
+			resource := &infrav1.TPiCluster{}
 			err := k8sClient.Get(ctx, typeNamespacedName, resource)
 			Expect(err).NotTo(HaveOccurred())
 
