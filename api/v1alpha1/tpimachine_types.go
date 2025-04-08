@@ -60,5 +60,5 @@ type TPiMachineList struct {
 }
 
 func init() {
-	SchemeBuilder.Register(&TPiMachine{}, &TPiMachineList{})
+	objectTypes = append(objectTypes, &TPiMachine{}, &TPiMachineList{})
 }

@@ -60,5 +60,5 @@ type TPiClusterList struct {
 }
 
 func init() {
-	SchemeBuilder.Register(&TPiCluster{}, &TPiClusterList{})
+	objectTypes = append(objectTypes, &TPiCluster{}, &TPiClusterList{})
 }
